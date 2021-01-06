@@ -758,15 +758,22 @@ open class SCLAlertView: UIViewController {
     
     // showTitle(view, title, subTitle, timeout, style)
     @discardableResult
-    open func showTitle(_ title: String, subTitle: String? = nil, timeout: SCLTimeoutConfiguration?, completeText: String?, style: SCLAlertViewStyle, colorStyle: UInt?=0x000000, colorTextButton: UInt?=0xFFFFFF, circleIconImage: UIImage? = nil, animationStyle: SCLAnimationStyle = .topToBottom) -> SCLAlertViewResponder {
+    open func showTitle(_ title: String, subTitle: String? = nil, timeout: SCLTimeoutConfiguration?, completeText: String?, style: SCLAlertViewStyle, colorStyle: UInt?=0x000000, colorTextButton: UInt?=0xFFFFFF, circleIconImage: UIImage? = nil, animationStyle: SCLAnimationStyle = .topToBottom, window: UIWindow? = nil) -> SCLAlertViewResponder {
         selfReference = self
         view.alpha = 0
         view.tag = uniqueTag
         view.accessibilityIdentifier = uniqueAccessibilityIdentifier
-        let rv = UIApplication.shared.keyWindow! as UIWindow
-        rv.addSubview(view)
-        view.frame = rv.bounds
-        baseView.frame = rv.bounds
+        let targetWindow: UIWindow?
+        if let window = window {
+            targetWindow = window
+        } else if let delegate = UIApplication.shared.delegate, let window = delegate.window {
+            targetWindow = window
+        } else {
+            targetWindow = nil
+        }
+        targetWindow?.addSubview(view)
+        view.frame = targetWindow?.bounds ?? .zero
+        baseView.frame = targetWindow?.bounds ?? .zero
         
         // Alert colour/icon
         var iconImage: UIImage?
